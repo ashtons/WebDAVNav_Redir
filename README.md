@@ -70,6 +70,7 @@ Advanced Example
 The script allows you to extend the lookup behaviour by implementing a lookup to a database table or some other lookup.
 The example_plugin.py file includes some basic examples of constructing your own URL using Python.
 Within this routine you could perform a database, ldap or other query in order to calculate the correct URL required for the user.
+In order to use the advanced mechanism, copy the contents of the example_plugin.py file to plugin.py and edit the contents.
 
 Configure the script to use SSL
 --------------------------------
