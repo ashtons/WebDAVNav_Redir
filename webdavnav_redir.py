@@ -15,12 +15,6 @@ import re
 import random
 from socket import gethostname
 
-####### User Variables ######
-
-SSL_CERTIFICATE = None  #'server.pem'
-USE_BASE_AUTH = False
-
-######
 DEFAULT_FORMAT = 'http://{{host}}/{{username}}/'
 PLUGIN_AVAILABLE = False
 
@@ -34,10 +28,9 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     pass
     
 class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
-    name = 'WebDAVNav Redirector'    
-    
+    name = 'WebDAVNav Redirector'        
     server_version = "%s %s" % (name, __version__)                                  
-        
+    
     def do_PROPFIND( self ):            
         if self.headers.getheader('Authorization') == None:           
             self.requestAuthentication()
@@ -66,10 +59,10 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
                 self.requestAuthentication()
                 
     def requestAuthentication(self):        
-        if USE_BASE_AUTH:
-            return self.requestBasicAuthentication()
+        if self.server.digest:
+            return self.requestDigestAuthentication()            
         else:
-            return self.requestDigestAuthentication()
+            return self.requestBasicAuthentication()
             
     def requestDigestAuthentication(self):        
         nonce = hashlib.md5(str(random.randint(1, 100000))).hexdigest()
@@ -88,14 +81,18 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
         
 def httpd(handler_class=WebDAVNavHandler, server_address = ('', 8080)):
     parser = argparse.ArgumentParser(description=handler_class.name)
-    parser.add_argument('-l', help='Address to listen on',default='')
-    parser.add_argument('-p', help='Port to listen on',default='8080')
-    parser.add_argument('-f', help='Redirect url format',default='http://{{host}}/{{username}}/')    
+    parser.add_argument('-l', help='Address to listen on [all]',default='')
+    parser.add_argument('-p', help='Port to listen on [8080]',default='8080')
+    parser.add_argument('-f', help='Redirect url format [http://{{host}}/{{username}}/]',default='http://{{host}}/{{username}}/')    
+    parser.add_argument('-s', help='SSL certificate (.pem format) [None]',default=None)  
+    parser.add_argument('-a', help='Authentication method (basic or digest) [digest]',default='digest')   
     args = parser.parse_args()        
     ip_address = str(args.l)
     tcp_port = int(args.p)   
     redirect_format = str(args.f)
     server_address = (ip_address,tcp_port)
+    certificate_file = args.s
+    auth_method = args.a    
     try:
         print handler_class.server_version           
         server = ThreadedHTTPServer(server_address, handler_class)
@@ -103,8 +100,12 @@ def httpd(handler_class=WebDAVNavHandler, server_address = ('', 8080)):
             server.user_format = redirect_format                     
         else:
             server.user_format = DEFAULT_FORMAT
-        if SSL_CERTIFICATE is not None:
-            server.socket = ssl.wrap_socket (server.socket, certfile= SSL_CERTIFICATE, server_side=True)
+        if auth_method == 'digest':
+            server.digest = True
+        else:
+            server.digest = False       
+        if certificate_file is not None:
+            server.socket = ssl.wrap_socket (server.socket, certfile=certificate_file, server_side=True)
             print "SSL on"
         else:
             print "SSL off"        

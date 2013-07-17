@@ -47,15 +47,17 @@ Options
 -------------
 The script accepts a couple of basic command line parameters in order to set the available options
 
-    usage: webdavnav_redir.py [-h] [-l L] [-p P] [-f F] [-c C]
+    usage: webdavnav_redir.py [-h] [-l L] [-p P] [-f F] [-s S] [-a A]
 
     WebDAVNav Redirector
 
     optional arguments:
       -h, --help  show this help message and exit
-      -l L        Address to listen on
-      -p P        Port to listen on
-      -f F        Redirect url format     
+      -l L        Address to listen on [all]
+      -p P        Port to listen on [8080]
+      -f F        Redirect url format [http://{{host}}/{{username}}/]
+      -s S        SSL certificate (.pem format) [None]
+      -a A        Authentication method (basic or digest) [digest]    
   
 By default the app will listen on all available addresses for incoming connections on port 8080.  
 Connections will also by default be redirected to http://current_host/username/.  
@@ -74,14 +76,20 @@ The example_plugin.py file includes some basic examples of constructing your own
 Within this routine you could perform a database, ldap or other query in order to calculate the correct URL required for the user.
 In order to use the advanced mechanism, copy the contents of the example_plugin.py file to plugin.py and edit the contents.
 
+Authentication Method
+----------------------
+By default the app will use Digest authentication in order to request the username from the mobile application.
+This script ignores the password and performs no authentication itself, that is left up to the final redirected server.
+You can force the script to use Basic authentication by appending the -a option
+
+    python webdavnav_redir.py -a basic
+
 Configure the script to use SSL
 --------------------------------
 The script can be configured to use SSL rather than plain HTTP. In order to use SSL you need to include a link to a suitably encoded .pem certificate file. 
-Replace the line at the top of the certificate with the correct path to your file
+run the command with the additional -s option directed at your .pem certificate file
 
-    SSL_CERTIFICATE = None
-
-    SSL_CERTIFICATE = 'server.pem'
+    python webdavnav_redir.py -s server.pem
 
 To generate a self-signed certificate for testing purposes you can use the following command on a Unix/Linux machine.
 
