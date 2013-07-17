@@ -57,9 +57,9 @@ The script accepts a couple of basic command line parameters in order to set the
       -p P        Port to listen on
       -f F        Redirect url format     
   
-By default the app will listen on all available addresses for incoming connections on port 8080.
-Connections will also by default be redirected to http://current_host/username/
-Using the command line options you can configure which IP address and Port to use, as well as the default format for the redirected URL. 
+By default the app will listen on all available addresses for incoming connections on port 8080.  
+Connections will also by default be redirected to http://current_host/username/.  
+Using the command line options you can configure which IP address and Port to use, as well as the default format for the redirected URL.   
 
 **Examples**
 

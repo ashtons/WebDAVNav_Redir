@@ -21,8 +21,9 @@ SSL_CERTIFICATE = None  #'server.pem'
 USE_BASE_AUTH = False
 
 ######
-
+DEFAULT_FORMAT = 'http://{{host}}/{{username}}/'
 PLUGIN_AVAILABLE = False
+
 try:
     from plugin import advanced_redirect
     PLUGIN_AVAILABLE = True    
@@ -34,8 +35,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     
 class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
     name = 'WebDAVNav Redirector'    
-    default_format = 'http://{{host}}/{{username}}/'
-    user_format = default_format
+    
     server_version = "%s %s" % (name, __version__)                                  
         
     def do_PROPFIND( self ):            
@@ -44,8 +44,7 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
         else:
             auth_header = self.headers.getheader('Authorization')          
             username = None
-            (kind,_,data) = auth_header.partition(' ')          
-            print kind
+            (kind,_,data) = auth_header.partition(' ')                      
             if kind == 'Basic':     
                 (username, _, _) = b64decode(data).partition(':')           
             elif kind == 'Digest':                               
@@ -55,11 +54,11 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
                 advanced = False
                 if PLUGIN_AVAILABLE: 
                     advanced = advanced_redirect(username)                  
-                if not advanced:   
-                    tmp_1 = self.user_format.replace('{{username}}',username)
+                if not advanced:                       
+                    tmp_1 = self.server.user_format.replace('{{username}}',username)
                     redirect_url = tmp_1.replace('{{host}}',gethostname())                                                
                 else:
-                    redirect_url = str(advanced)               
+                    redirect_url = str(advanced)                               
                 self.send_response(307)
                 self.send_header("Location", redirect_url)
                 self.end_headers()
@@ -98,10 +97,12 @@ def httpd(handler_class=WebDAVNavHandler, server_address = ('', 8080)):
     redirect_format = str(args.f)
     server_address = (ip_address,tcp_port)
     try:
-        print handler_class.server_version   
-        if len(redirect_format) > 0 and redirect_format.startswith('http'):
-            handler_class.USER_FORMAT = redirect_format                
+        print handler_class.server_version           
         server = ThreadedHTTPServer(server_address, handler_class)
+        if len(redirect_format) > 0 and redirect_format.startswith('http'):           
+            server.user_format = redirect_format                     
+        else:
+            server.user_format = DEFAULT_FORMAT
         if SSL_CERTIFICATE is not None:
             server.socket = ssl.wrap_socket (server.socket, certfile= SSL_CERTIFICATE, server_side=True)
             print "SSL on"
