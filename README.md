@@ -5,6 +5,8 @@ This is a simple python script to show how you can redirect initial connections 
 This would be of most use to organisations that have shared devices and each user has their own folder for storing documents on the server.
 This could also be used to redirect different users/classes to different servers if required.
 
+more information can be found at http://seanashton.net/webdav/  
+
 WebDAV Navigator for iPhone and Android
 ---------------------------------------
 [App Store](https://itunes.apple.com/app/webdav-nav/id412341302?mt=8)  
