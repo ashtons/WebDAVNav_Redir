@@ -30,7 +30,13 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
     name = 'WebDAVNav Redirector'        
     server_version = "%s %s" % (name, __version__)                                  
-    
+
+    def do_OPTIONS( self ):   
+        self.send_response(200) 
+        self.send_header('Content-type', 'text/html')
+        self.send_header('Allow', 'OPTIONS, GET, HEAD, DELETE, PUT, POST, COPY, MOVE, MKCOL, PROPFIND, LOCK, UNLOCK')
+        self.end_headers()     
+        
     def do_PROPFIND( self ):            
         if self.headers.getheader('Authorization') == None:           
             self.requestAuthentication()
