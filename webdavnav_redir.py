@@ -54,10 +54,11 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
                 if PLUGIN_AVAILABLE: 
                     advanced = advanced_redirect(username)                  
                 if not advanced:                       
-                    tmp_1 = self.server.user_format.replace('{{username}}',username)
-                    redirect_url = tmp_1.replace('{{host}}',gethostname())                                                
+                    redirect_url = self.server.user_format                                                        
                 else:
-                    redirect_url = str(advanced)                               
+                    redirect_url = str(advanced)                 
+                redirect_url = redirect_url.replace('{{host}}',gethostname())                               
+                redirect_url = redirect_url.replace('{{username}}',username)                                 
                 self.send_response(307)
                 self.send_header("Location", redirect_url)
                 self.end_headers()
@@ -92,7 +93,8 @@ def httpd(handler_class=WebDAVNavHandler, server_address = ('', 8080)):
     parser.add_argument('-f', help='Redirect url format [http://{{host}}/{{username}}/]',default='http://{{host}}/{{username}}/')    
     parser.add_argument('-s', help='SSL certificate (.pem format) [None]',default=None)  
     parser.add_argument('-a', help='Authentication method (basic or digest) [digest]',default='digest')   
-    args = parser.parse_args()        
+    args = parser.parse_args()    
+  
     ip_address = str(args.l)
     tcp_port = int(args.p)   
     redirect_format = str(args.f)
