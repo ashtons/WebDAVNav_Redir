@@ -39,10 +39,12 @@ WebDAVNav Redirector is a single file script written in Python that can be run o
 Simply copy the .py file to a folder of your choice and run it from the command line using the options you require.
 
 ### Windows
-Because the script is written in Python, you would likely need to install Python in order to run it.   
-[Python 2.7.5 download](http://www.python.org/getit/)  
+Because the script is written in Python, you will need to install Python in order to run it.   
+[Python 2.7.6 download](http://www.python.org/download/releases/2.7.6/)  
 Once installed, simply copy the .py file to a folder of your choice. Create a .bat file to launch the script using the options you require.
-
+ 
+ 
+ 
 Options
 -------------
 The script accepts a couple of basic command line parameters in order to set the available options
