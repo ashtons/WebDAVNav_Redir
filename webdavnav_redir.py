@@ -35,6 +35,7 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_response(200) 
         self.send_header('Content-type', 'text/html')
         self.send_header('Allow', 'OPTIONS, GET, HEAD, DELETE, PUT, POST, COPY, MOVE, MKCOL, PROPFIND, LOCK, UNLOCK')
+        self.send_header('Connection', 'close')
         self.end_headers()     
         
     def do_PROPFIND( self ):            
@@ -61,6 +62,7 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
                 redirect_url = redirect_url.replace('{{username}}',username)                                 
                 self.send_response(307)
                 self.send_header("Location", redirect_url)
+                self.send_header('Connection', 'close')
                 self.end_headers()
             else:
                 self.requestAuthentication()
@@ -76,6 +78,7 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_response(401) 
         self.send_header('Content-type', 'text/html')
         self.send_header('WWW-Authenticate', 'Digest realm="%s", qop="auth",nonce="%s", ' % (self.name, nonce))
+        self.send_header('Connection', 'close')
         self.end_headers()     
         self.wfile.write('Authentication required')                                         
         
@@ -83,6 +86,7 @@ class WebDAVNavHandler( BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_response(401)
         self.send_header('WWW-Authenticate', 'Basic realm=\"%s\"' % self.name)
         self.send_header('Content-type', 'text/html')
+        self.send_header('Connection', 'close')
         self.end_headers()    
         self.wfile.write('Authentication required')        
         
